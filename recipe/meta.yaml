@@ -1,6 +1,6 @@
 {% set name = "pyinstaller" %}
-{% set version = "5.13.0" %}
-{% set sha256 = "5e446df41255e815017d96318e39f65a3eb807e74a796c7e7ff7f13b6366a2e9" %}
+{% set version = "6.8.0" %}
+{% set sha256 = "3f4b6520f4423fe19bcc2fd63ab7238851ae2bdcbc98f25bc5d2f97cc62012e9" %}
 
 package:
   name: {{ name.lower() }}
@@ -14,7 +14,7 @@ source:
 
 build:
   number: 0
-  skip: true  # [py<37 or py>311]
+  skip: true  # [py<38 or py>312]
   entry_points:
     - pyinstaller = PyInstaller.__main__:run
     - pyi-archive_viewer = PyInstaller.utils.cliutils.archive_viewer:run
@@ -34,7 +34,7 @@ build:
     # Build the bootloader
     - pushd bootloader
     - waf --prefix="${PREFIX}" --clang distclean all            # [osx]
-    - waf --prefix="${PREFIX}" --gcc --no-lsb distclean all     # [linux]
+    - waf --prefix="${PREFIX}" --gcc distclean all     # [linux]
     - waf --prefix="%LIBRARY_PREFIX%" distclean all             # [win]
     # Build the package
     - popd
@@ -44,6 +44,7 @@ build:
 requirements:
   build:
     - {{ compiler("c") }}
+    - {{ stdlib("c") }}
     - cross-python_{{ target_platform }}  # [build_platform != target_platform]
     - pip
     - python
@@ -57,14 +58,15 @@ requirements:
 
   run:
     - altgraph
+    - packaging >=22.0
     - python
     - pefile >=2022.5.30      # [win]
     - pywin32                 # [win]
-    - pywin32-ctypes >=0.2.0  # [win]
-    - macholib >=1.8
-    - pyinstaller-hooks-contrib >=2021.4
-    - setuptools  # due to pkg_resources import
-    - importlib-metadata >=0.8  # [py<38]
+    - pywin32-ctypes >=0.2.1  # [win]
+    - macholib >=1.8  # [osx]
+    - pyinstaller-hooks-contrib >=2024.6
+    - setuptools >=42.0.0
+    - importlib-metadata >=4.6  # [py<310]
 
 test:
   imports:
